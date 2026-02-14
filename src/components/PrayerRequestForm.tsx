@@ -14,6 +14,8 @@ export default function PrayerRequestForm() {
   const [isRecording, setIsRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [requestNumber, setRequestNumber] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -69,55 +71,71 @@ export default function PrayerRequestForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.mobile_number) {
-      alert('Please fill in all required fields');
+      setError('Please fill in all required fields');
       return;
     }
 
     setLoading(true);
+    setError(null);
 
     try {
-      const { data: requestNumberData } = await supabase.rpc('generate_request_number');
-      const requestNumber = requestNumberData as string;
-
       let voiceUrl = null;
       let imageUrl = null;
       let documentUrl = null;
 
+      const timestamp = Date.now();
+
       if (voiceRecording) {
-        const voiceFileName = `${requestNumber}-${Date.now()}.webm`;
-        voiceUrl = await uploadFile(voiceRecording, 'prayer-voice-recordings', voiceFileName);
+        try {
+          const voiceFileName = `voice-${timestamp}.webm`;
+          voiceUrl = await uploadFile(voiceRecording, 'prayer-voice-recordings', voiceFileName);
+        } catch (uploadError) {
+          console.error('Voice upload failed:', uploadError);
+        }
       }
 
       if (image) {
-        const imageFileName = `${requestNumber}-${Date.now()}-${image.name}`;
-        imageUrl = await uploadFile(image, 'prayer-images', imageFileName);
+        try {
+          const imageFileName = `image-${timestamp}-${image.name}`;
+          imageUrl = await uploadFile(image, 'prayer-images', imageFileName);
+        } catch (uploadError) {
+          console.error('Image upload failed:', uploadError);
+        }
       }
 
       if (document) {
-        const docFileName = `${requestNumber}-${Date.now()}-${document.name}`;
-        documentUrl = await uploadFile(document, 'prayer-documents', docFileName);
+        try {
+          const docFileName = `document-${timestamp}-${document.name}`;
+          documentUrl = await uploadFile(document, 'prayer-documents', docFileName);
+        } catch (uploadError) {
+          console.error('Document upload failed:', uploadError);
+        }
       }
 
-      const { error } = await supabase.from('prayer_requests').insert({
-        request_number: requestNumber,
+      const { data, error: dbError } = await supabase.from('prayer_requests').insert({
         name: formData.name,
         mobile_number: formData.mobile_number,
         prayer_text: formData.prayer_text || null,
         voice_recording_url: voiceUrl,
         image_url: imageUrl,
         document_url: documentUrl,
-      });
+      }).select().maybeSingle();
 
-      if (error) throw error;
+      if (dbError) throw dbError;
+
+      if (data?.request_number) {
+        setRequestNumber(data.request_number);
+      }
 
       setSubmitted(true);
       setFormData({ name: '', mobile_number: '', prayer_text: '' });
       setVoiceRecording(null);
       setImage(null);
       setDocument(null);
-    } catch (error) {
-      console.error('Error submitting prayer request:', error);
-      alert('Failed to submit prayer request. Please try again.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit prayer request. Please try again.';
+      console.error('Error submitting prayer request:', err);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -133,11 +151,21 @@ export default function PrayerRequestForm() {
             </div>
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Prayer Request Submitted</h2>
+          {requestNumber && (
+            <div className="mb-4 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+              <p className="text-sm text-gray-600 mb-2">Your Prayer Request Number:</p>
+              <p className="text-3xl font-bold text-blue-600">{requestNumber}</p>
+              <p className="text-xs text-gray-500 mt-2">Please save this number for reference</p>
+            </div>
+          )}
           <p className="text-lg text-gray-600 mb-6">
             Your Prayer Request Is Submitted. God will take care of it.
           </p>
           <button
-            onClick={() => setSubmitted(false)}
+            onClick={() => {
+              setSubmitted(false);
+              setRequestNumber(null);
+            }}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
             Submit Another Request
@@ -162,6 +190,13 @@ export default function PrayerRequestForm() {
             </h1>
             <p className="text-gray-600">Submit your prayer request</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+              <p className="text-red-700 text-sm font-semibold">Error</p>
+              <p className="text-red-600 text-sm mt-1">{error}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
