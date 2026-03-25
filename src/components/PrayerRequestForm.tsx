@@ -335,7 +335,7 @@ export default function PrayerRequestForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-amber-700 text-white py-4 rounded-lg font-bold text-lg hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-amber-700 text-white py-4 rounded-lg font-bold text-lg hover:bg-amber-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
