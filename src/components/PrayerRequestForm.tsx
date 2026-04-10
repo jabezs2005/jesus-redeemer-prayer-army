@@ -143,40 +143,65 @@ export default function PrayerRequestForm() {
     }
   };
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <div className="mb-6">
-            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-              <Check className="w-12 h-12 text-green-600" />
-            </div>
+    if (submitted) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+        
+        <div className="mb-6">
+          <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+            <Check className="w-12 h-12 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Prayer Request Submitted</h2>
-          {requestNumber && (
-            <div className="mb-4 p-4 bg-amber-600 rounded-lg border-2 border-amber-400">
-              <p className="text-sm text-black-600 mb-2">Your Prayer Request Number:</p>
-              <p className="text-3xl font-bold text-white py-3">{requestNumber}</p>
-              <p className="text-xs text-black-500 mt-2">Please save this number for reference</p>
-            </div>
-          )}
-          <p className="text-lg text-gray-600 mb-6">
-            Your Prayer Request Is Submitted. God will take care of it.
-          </p>
-          <button
-            onClick={() => {
-              setSubmitted(false);
-              setRequestNumber(null);
-            }}
-            className="w-full bg-amber-700 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition-colors"
-          >
-            Submit Another Request
-          </button>
         </div>
-      </div>
-    );
-  }
 
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          Prayer Request Submitted
+        </h2>
+
+        {requestNumber && (
+          <div className="mb-4 p-4 bg-amber-600 rounded-lg border-2 border-amber-400">
+            <p className="text-sm text-black mb-2">
+              Your Prayer Request Number:
+            </p>
+            <p className="text-3xl font-bold text-white py-3">
+              {requestNumber}
+            </p>
+            <p className="text-xs text-black mt-2">
+              Please save this number for reference
+            </p>
+          </div>
+        )}
+
+        <p className="text-lg text-gray-600 mb-6">
+          Your Prayer Request Is Submitted. God will take care of it.
+        </p>
+
+        <button
+          onClick={() => {
+            setSubmitted(false);
+            setRequestNumber(null);
+          }}
+          className="w-full bg-amber-700 text-white py-3 rounded-lg font-semibold hover:bg-amber-800 transition-colors"
+        >
+          Submit Another Request
+        </button>
+
+        {/* ✅ Added centered content */}
+        <div className="flex flex-col items-center justify-center text-center mt-8">
+          <p className="text-gray-600 text-sm">
+            For Prayer Enquiries Contact us through whatsapp : <div>+91 6381928967(Only Message)</div>
+          </p>
+
+          <p className="text-xs text-gray-500 mt-2">
+            © {new Date().getFullYear()} Jesus Redeemer Prayer Army. All rights reserved.<div>Powered By Javex Industry.</div>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+ 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-2xl mx-auto">
@@ -358,6 +383,16 @@ export default function PrayerRequestForm() {
           </div>
         </div>
       </div>
+     <div className="flex flex-col items-center justify-center text-center py-6">
+  <p className="text-gray-600 text-lg">
+    For Prayer Enquiries Contact us through whatsapp : +91 6381928967 (Only Message)
+  </p>
+
+  <p className="text-sm text-gray-500 mt-4">
+    © {new Date().getFullYear()} Jesus Redeemer Prayer Army. All rights reserved. Powered By Javex Industry.
+  </p>
+</div>
     </div>
+    
   );
 }
