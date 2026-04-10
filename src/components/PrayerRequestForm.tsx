@@ -386,6 +386,7 @@ export default function PrayerRequestForm() {
      <div className="flex flex-col items-center justify-center text-center py-6">
   <p className="text-gray-600 text-lg">
     For Prayer Enquiries Contact us through whatsapp : +91 6381928967 (Only Message)
+    <div>After submitting your Prayer Request you will get A Prayer Request Number (ex. PR-00XXX) kindly send the number to the above whatsapp number through message.</div>
   </p>
 
   <p className="text-sm text-gray-500 mt-4">
